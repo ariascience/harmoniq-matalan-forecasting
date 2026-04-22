@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#07090f" />
+<meta name="color-scheme" content="dark" />
+<title>HarmonIQ · Matalan Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #07090f;
+    --surface: #0d1117;
+    --card: rgba(17, 24, 39, 0.72);
+    --border: rgba(255, 255, 255, 0.08);
+    --border-strong: rgba(255, 255, 255, 0.14);
+    --accent: #3b82f6;
+    --accent2: #8b5cf6;
+    --green: #10b981;
+    --red: #ef4444;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --muted-2: #64748b;
+    --glow: rgba(59, 130, 246, 0.35);
+    --glow2: rgba(139, 92, 246, 0.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: 'Sora', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 300;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    min-height: 100dvh;
+    position: relative;
+  }
+
+  /* Ambient gradient aurora */
+  body::before,
+  body::after {
+    content: '';
+    position: fixed;
+    pointer-events: none;
+    z-index: 0;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+  body::before {
+    width: 520px; height: 520px; top: -120px; left: -140px;
+    background: radial-gradient(circle at 30% 30%, var(--glow), transparent 60%);
+  }
+  body::after {
+    width: 620px; height: 620px; bottom: -180px; right: -200px;
+    background: radial-gradient(circle at 70% 70%, var(--glow2), transparent 60%);
+    animation-delay: -6s;
+  }
+  @keyframes drift {
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    100% { transform: translate3d(30px, -20px, 0) scale(1.08); }
+  }
+
+  /* Subtle grid overlay */
+  .grid-bg {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(20px, 4vw, 40px);
+    padding-top: max(clamp(20px, 4vw, 40px), env(safe-area-inset-top));
+    padding-bottom: max(clamp(20px, 4vw, 40px), env(safe-area-inset-bottom));
+  }
+
+  .card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--card);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: clamp(28px, 6vw, 40px);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+      0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .brand-mark {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: grid;
+    place-items: center;
+    box-shadow: 0 8px 24px var(--glow), 0 0 0 1px rgba(255,255,255,0.08) inset;
+    flex-shrink: 0;
+  }
+  .brand-mark svg { width: 22px; height: 22px; color: white; }
+  .brand-text { line-height: 1.15; }
+  .brand-name {
+    font-size: 18px; font-weight: 700; letter-spacing: -0.01em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+  }
+  .brand-sub {
+    font-size: 11px; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 0.08em;
+    text-transform: uppercase; margin-top: 2px;
+  }
+
+  h1 {
+    font-size: clamp(22px, 5vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .tagline {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.55;
+  }
+
+  form { display: flex; flex-direction: column; gap: 16px; }
+
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-wrap svg.leading {
+    position: absolute; left: 14px; width: 16px; height: 16px;
+    color: var(--muted-2); pointer-events: none;
+  }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    font-family: inherit;
+    font-size: 16px; /* 16px prevents iOS auto-zoom */
+    font-weight: 400;
+    color: var(--text);
+    background: rgba(7, 9, 15, 0.6);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 14px 16px 14px 42px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    -webkit-appearance: none; appearance: none;
+  }
+  input::placeholder { color: var(--muted-2); }
+  input:focus {
+    border-color: var(--accent);
+    background: rgba(7, 9, 15, 0.8);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18);
+  }
+  input:-webkit-autofill,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px rgba(7, 9, 15, 0.95) inset;
+    -webkit-text-fill-color: var(--text);
+    caret-color: var(--text);
+  }
+
+  .toggle-pass {
+    position: absolute; right: 10px;
+    background: transparent; border: none; cursor: pointer;
+    padding: 8px; color: var(--muted-2);
+    border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: color 0.15s, background 0.15s;
+  }
+  .toggle-pass:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+  .toggle-pass svg { width: 18px; height: 18px; }
+
+  button.submit {
+    margin-top: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: 12px;
+    padding: 15px 20px;
+    cursor: pointer;
+    min-height: 50px;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px var(--glow), 0 0 0 1px rgba(255,255,255,0.06) inset;
+    transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button.submit:hover { transform: translateY(-1px); box-shadow: 0 14px 36px var(--glow); }
+  button.submit:active { transform: translateY(0); filter: brightness(0.95); }
+  button.submit:disabled {
+    cursor: not-allowed; opacity: 0.75;
+    transform: none; box-shadow: 0 6px 20px var(--glow);
+  }
+  button.submit .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.35);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .status {
+    min-height: 20px;
+    font-size: 13px;
+    color: var(--red);
+    text-align: center;
+    margin-top: -4px;
+    transition: color 0.15s;
+  }
+  .status.muted { color: var(--muted); }
+
+  .footer {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 11px;
+    color: var(--muted-2);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+  .footer .lock {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--muted);
+  }
+  .footer .lock svg { width: 12px; height: 12px; }
+
+  @media (max-width: 380px) {
+    .card { border-radius: 16px; }
+    .brand { margin-bottom: 22px; }
+    h1 { margin-bottom: 6px; }
+    .tagline { margin-bottom: 22px; font-size: 13px; }
+    .footer { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body::before, body::after { animation: none; }
+    button.submit .spinner { animation-duration: 1.4s; }
+  }
+</style>
+</head>
+<body>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <main class="shell">
+    <section class="card" role="dialog" aria-labelledby="title">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 18 L8 6 L12 14 L16 8 L21 18" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name">HarmonIQ</div>
+          <div class="brand-sub">Insight Portal</div>
+        </div>
+      </div>
+
+      <h1 id="title">Welcome back</h1>
+      <p class="tagline">Sign in to access the Matalan demand forecasting report.</p>
+
+      <form id="login-form" autocomplete="on" novalidate>
+        <div class="field">
+          <label for="username">Username</label>
+          <div class="input-wrap">
+            <svg class="leading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+            </svg>
+            <input id="username" name="username" type="text"
+                   placeholder="Enter username"
+                   autocomplete="username"
+                   autocapitalize="off" autocorrect="off" spellcheck="false"
+                   required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <svg class="leading" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="4" y="11" width="16" height="10" rx="2" />
+              <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+            </svg>
+            <input id="password" name="password" type="password"
+                   placeholder="Enter password"
+                   autocomplete="current-password"
+                   required />
+            <button type="button" class="toggle-pass" id="toggle-pass" aria-label="Show password">
+              <svg id="eye-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg id="eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none">
+                <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a19.6 19.6 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a19.5 19.5 0 0 1-2.16 3.19M1 1l22 22M14.12 14.12a3 3 0 0 1-4.24-4.24" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+
+        <button type="submit" class="submit" id="submit-btn">
+          <span id="submit-label">Access Report</span>
+        </button>
+      </form>
+
+      <div class="footer">
+        <span>HarmonIQ &times; Aria Science</span>
+        <span class="lock" title="Report is AES-256 encrypted at rest">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="4" y="11" width="16" height="10" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+          AES-256
+        </span>
+      </div>
+    </section>
+  </main>
+
+<script>
+(() => {
+  const form = document.getElementById('login-form');
+  const userEl = document.getElementById('username');
+  const passEl = document.getElementById('password');
+  const statusEl = document.getElementById('status');
+  const btn = document.getElementById('submit-btn');
+  const label = document.getElementById('submit-label');
+  const togglePass = document.getElementById('toggle-pass');
+  const eyeOn = document.getElementById('eye-on');
+  const eyeOff = document.getElementById('eye-off');
+
+  togglePass.addEventListener('click', () => {
+    const showing = passEl.type === 'text';
+    passEl.type = showing ? 'password' : 'text';
+    togglePass.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    eyeOn.style.display = showing ? '' : 'none';
+    eyeOff.style.display = showing ? 'none' : '';
+  });
+
+  const b64ToBytes = (b64) => {
+    const bin = atob(b64);
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  };
+
+  let payloadCache = null;
+  const loadPayload = async () => {
+    if (payloadCache) return payloadCache;
+    const res = await fetch('encrypted.json', { cache: 'force-cache' });
+    if (!res.ok) throw new Error('Report not available (' + res.status + ')');
+    payloadCache = await res.json();
+    return payloadCache;
+  };
+
+  const deriveKey = async (credential, salt, iterations) => {
+    const material = await crypto.subtle.importKey(
+      'raw', new TextEncoder().encode(credential),
+      { name: 'PBKDF2' }, false, ['deriveKey']
+    );
+    return crypto.subtle.deriveKey(
+      { name: 'PBKDF2', salt, iterations, hash: 'SHA-256' },
+      material,
+      { name: 'AES-GCM', length: 256 },
+      false,
+      ['decrypt']
+    );
+  };
+
+  const setBusy = (busy, text) => {
+    btn.disabled = busy;
+    if (busy) {
+      label.innerHTML = '<span class="spinner" aria-hidden="true"></span>' + (text || 'Verifying…');
+    } else {
+      label.textContent = text || 'Access Report';
+    }
+  };
+
+  const setStatus = (msg, variant) => {
+    statusEl.textContent = msg || '';
+    statusEl.classList.toggle('muted', variant === 'muted');
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = userEl.value.trim();
+    const password = passEl.value;
+    if (!username || !password) {
+      setStatus('Enter your username and password.');
+      return;
+    }
+    setStatus('', 'muted');
+    setBusy(true, 'Verifying…');
+
+    try {
+      const payload = await loadPayload();
+      const salt = b64ToBytes(payload.salt);
+      const iv = b64ToBytes(payload.iv);
+      const ct = b64ToBytes(payload.ct);
+      const credential = `${username}:${password}`;
+      const key = await deriveKey(credential, salt, payload.kdf.iterations);
+
+      let plaintextBuf;
+      try {
+        plaintextBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct);
+      } catch (err) {
+        setBusy(false);
+        setStatus('Invalid username or password.');
+        passEl.select();
+        return;
+      }
+
+      setBusy(true, 'Loading report…');
+      const html = new TextDecoder().decode(plaintextBuf);
+
+      // Replace the whole document with the decrypted report.
+      // Using document.open/write/close preserves the current URL and lets
+      // the report's own <script>/font/chart assets execute cleanly.
+      document.open();
+      document.write(html);
+      document.close();
+    } catch (err) {
+      console.error(err);
+      setBusy(false);
+      setStatus(err.message || 'Something went wrong. Please try again.');
+    }
+  });
+
+  // Focus username on load for desktop; skip on mobile to avoid auto keyboard.
+  if (!matchMedia('(pointer: coarse)').matches) {
+    userEl.focus();
+  }
+})();
+</script>
+</body>
+</html>
